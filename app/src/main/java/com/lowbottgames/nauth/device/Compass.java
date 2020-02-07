@@ -6,6 +6,7 @@ public class Compass implements OrientationSensor.OrientationListener {
 
     private OrientationSensor orientationSensor;
     private Compass.AngleListener angleListener;
+    private float angle;
 
     public Compass(Context context) {
         orientationSensor = new OrientationSensor(
@@ -28,13 +29,18 @@ public class Compass implements OrientationSensor.OrientationListener {
 
     @Override
     public void onOrientationChange(float azimuth, float pitch, float roll) {
+        float result = (float) Math.toDegrees(azimuth);
+        if (result < 0.0f) {
+            result += 360f;
+        }
         if (angleListener != null) {
-            float result = (float) Math.toDegrees(azimuth);
-            if (result < 0.0f) {
-                result += 360f;
-            }
             angleListener.onAngleChange(result);
         }
+        angle = result;
+    }
+
+    public float getAngle() {
+        return angle;
     }
 
     public interface AngleListener {
