@@ -1,4 +1,4 @@
-package com.lowbottgames.nauth;
+package com.lowbottgames.nauth.device;
 
 import android.content.Context;
 

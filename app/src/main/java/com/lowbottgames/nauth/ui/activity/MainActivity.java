@@ -1,9 +1,12 @@
-package com.lowbottgames.nauth;
+package com.lowbottgames.nauth.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
+
+import com.lowbottgames.nauth.R;
+import com.lowbottgames.nauth.device.Compass;
 
 public class MainActivity extends AppCompatActivity {
 
