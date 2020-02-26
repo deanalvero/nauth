@@ -7,4 +7,9 @@
 
     <string name="unlock">Unlock</string>
 
+
+    <string name="enable_lock">Enable lock</string>
+    <string name="authenticate">Authenticate</string>
+    <string name="change_directions">Change directions</string>
+
 </resources>
