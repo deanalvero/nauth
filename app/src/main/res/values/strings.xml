@@ -5,4 +5,6 @@
     <string name="select">Select</string>
     <string name="delete">Delete</string>
 
+    <string name="unlock">Unlock</string>
+
 </resources>
