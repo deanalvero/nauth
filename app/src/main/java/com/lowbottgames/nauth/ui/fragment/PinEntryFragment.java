@@ -1,15 +1,14 @@
 package com.lowbottgames.nauth.ui.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.lowbottgames.nauth.R;
 import com.lowbottgames.nauth.device.Compass;
@@ -45,8 +44,8 @@ public class PinEntryFragment extends Fragment {
             }
         });
 
-        textViewAngle = view.findViewById(R.id.textView_angle);
-        textViewValue = view.findViewById(R.id.textView_value);
+        textViewAngle = (TextView) view.findViewById(R.id.textView_angle);
+        textViewValue = (TextView) view.findViewById(R.id.textView_value);
 
         view.findViewById(R.id.button_select).setOnClickListener(new View.OnClickListener() {
             @Override
