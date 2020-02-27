@@ -12,23 +12,41 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lowbottgames.nauth.R;
+import com.lowbottgames.nauth.device.Compass;
+import com.lowbottgames.nauth.device.DirectionRepositoryImpl;
 import com.lowbottgames.nauth.device.service.LockScreenService;
+import com.lowbottgames.nauth.domain.DirectionEntry;
+import com.lowbottgames.nauth.domain.DirectionManager;
 
 public class LockScreenActivity extends AppCompatActivity {
 
     public WindowManager windowManager;
     public RelativeLayout relativeLayout;
-    private View mainView;
+
+    private DirectionManager directionManager;
+    private Compass compass;
+    private TextView textViewInput;
+    private TextView textViewAngle;
+    private TextView textViewValue;
+    private DirectionEntry directionEntry;
 
     private boolean isCheckingOverlayPermission = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        compass = new Compass(this);
+        directionManager = new DirectionManager(
+                new DirectionRepositoryImpl(this)
+        );
+
         try {
-            showLockScreen();
+            showUI();
         } catch (WindowManager.BadTokenException e) {
             checkOverlayPermission();
         }
@@ -37,6 +55,7 @@ public class LockScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        compass.start();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && isCheckingOverlayPermission
@@ -45,7 +64,13 @@ public class LockScreenActivity extends AppCompatActivity {
         }
     }
 
-    private void showLockScreen() {
+    @Override
+    public void onStop() {
+        super.onStop();
+        compass.stop();
+    }
+
+    private void showUI() {
         if (!LockScreenService.isRunning(this)) {
             startService(new Intent(getBaseContext(), LockScreenService.class));
         }
@@ -74,20 +99,60 @@ public class LockScreenActivity extends AppCompatActivity {
         );
 
         relativeLayout = new RelativeLayout(getBaseContext());
-        mainView = View.inflate(this, R.layout.activity_lock_screen, this.relativeLayout);
+        View mainView = View.inflate(this, R.layout.activity_lock_screen, this.relativeLayout);
 
         windowManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
         if (windowManager != null) {
             windowManager.addView(this.relativeLayout, localLayoutParams);
         }
 
-        mainView.findViewById(R.id.button_unlock).setOnClickListener(new View.OnClickListener() {
+        compass.setAngleListener(new Compass.AngleListener() {
+            @Override
+            public void onAngleChange(float angle) {
+                textViewAngle.setText(String.valueOf(angle));
+                textViewValue.setText(String.valueOf((int) angle / 10));
+            }
+        });
+
+        textViewInput = (TextView) mainView.findViewById(R.id.textView_input);
+        textViewAngle = (TextView) mainView.findViewById(R.id.textView_angle);
+        textViewValue = (TextView) mainView.findViewById(R.id.textView_value);
+
+        directionEntry = new DirectionEntry(new DirectionEntry.Listener() {
+            @Override
+            public void onInputCount(int count) {
+                textViewInput.setText(
+                        new String(new char[count]).replace("\0", "*")
+                );
+            }
+
+            @Override
+            public void onDirectionsEntered(int[] directions) {
+                if (directionManager.authenticate(directions)) {
+                    showToastMessage("Authentication successful");
+
+                    windowManager.removeView(relativeLayout);
+                    relativeLayout.removeAllViews();
+                    finish();
+                } else {
+                    showToastMessage("Authentication failed");
+                }
+            }
+        });
+
+        mainView.findViewById(R.id.button_select).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                windowManager.removeView(relativeLayout);
-                relativeLayout.removeAllViews();
+                directionEntry.enter(
+                        (int) compass.getAngle() / 10
+                );
+            }
+        });
 
-                finish();
+        mainView.findViewById(R.id.button_delete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                directionEntry.delete();
             }
         });
     }
@@ -102,4 +167,11 @@ public class LockScreenActivity extends AppCompatActivity {
         }
     }
 
+    private void showToastMessage(String message) {
+        Toast.makeText(
+                this,
+                message,
+                Toast.LENGTH_SHORT
+        ).show();
+    }
 }

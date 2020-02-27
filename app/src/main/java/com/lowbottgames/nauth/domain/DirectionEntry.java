@@ -27,6 +27,9 @@ public class DirectionEntry {
                 listener.onDirectionsEntered(toArray(directions));
             }
             directions.clear();
+            if (listener != null) {
+                listener.onInputCount(directions.size());
+            }
         }
     }
 
