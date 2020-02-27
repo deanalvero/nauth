@@ -4,18 +4,24 @@ import java.util.Arrays;
 
 public class DirectionManager {
 
-    private int[] directions;
+    private DirectionRepository directionRepository;
+
+    public DirectionManager(DirectionRepository directionRepository) {
+        this.directionRepository = directionRepository;
+    }
 
     public boolean authenticate(int[] directions) {
-        if (this.directions == null
+        int[] directionsStored = directionRepository.get();
+
+        if (directionsStored == null
             || directions == null) {
             return false;
         }
-        return Arrays.equals(this.directions, directions);
+        return Arrays.equals(directionsStored, directions);
     }
 
     public void changeDirection(int[] directions) {
-        this.directions = directions;
+        directionRepository.set(directions);
     }
 
 }

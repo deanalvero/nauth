@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.lowbottgames.nauth.R;
+import com.lowbottgames.nauth.device.DirectionRepositoryImpl;
 import com.lowbottgames.nauth.device.service.LockScreenService;
 import com.lowbottgames.nauth.domain.DirectionEntry;
 import com.lowbottgames.nauth.domain.DirectionManager;
@@ -27,7 +28,9 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        directionManager = new DirectionManager();
+        directionManager = new DirectionManager(
+                new DirectionRepositoryImpl(this)
+        );
 
         checkOverlayPermission();
 
