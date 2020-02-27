@@ -47,6 +47,7 @@ public class LockScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         compass = new Compass(this);
+        compass.start();
         directionManager = new DirectionManager(
                 new DirectionRepositoryImpl(this)
         );
@@ -61,7 +62,6 @@ public class LockScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        compass.start();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && isCheckingOverlayPermission
@@ -71,9 +71,9 @@ public class LockScreenActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    protected void onDestroy() {
         compass.stop();
+        super.onDestroy();
     }
 
     private void showUI() {
