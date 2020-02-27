@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +23,7 @@ import com.lowbottgames.nauth.device.DirectionRepositoryImpl;
 import com.lowbottgames.nauth.device.service.LockScreenService;
 import com.lowbottgames.nauth.domain.DirectionEntry;
 import com.lowbottgames.nauth.domain.DirectionManager;
+import com.lowbottgames.nauth.ui.view.DirectionView;
 
 public class LockScreenActivity extends AppCompatActivity {
 
@@ -35,6 +38,9 @@ public class LockScreenActivity extends AppCompatActivity {
     private DirectionEntry directionEntry;
 
     private boolean isCheckingOverlayPermission = false;
+
+    private DirectionView directionView;
+    private float currentAngle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,11 +98,6 @@ public class LockScreenActivity extends AppCompatActivity {
 
         Window window = getWindow();
         window.setAttributes(localLayoutParams);
-        View decorView = window.getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        );
 
         relativeLayout = new RelativeLayout(getBaseContext());
         View mainView = View.inflate(this, R.layout.activity_lock_screen, this.relativeLayout);
@@ -111,12 +112,14 @@ public class LockScreenActivity extends AppCompatActivity {
             public void onAngleChange(float angle) {
                 textViewAngle.setText(String.valueOf(angle));
                 textViewValue.setText(String.valueOf((int) angle / 10));
+                updateUIDirectionView(angle);
             }
         });
 
         textViewInput = (TextView) mainView.findViewById(R.id.textView_input);
         textViewAngle = (TextView) mainView.findViewById(R.id.textView_angle);
         textViewValue = (TextView) mainView.findViewById(R.id.textView_value);
+        directionView = (DirectionView) mainView.findViewById(R.id.directionView);
 
         directionEntry = new DirectionEntry(new DirectionEntry.Listener() {
             @Override
@@ -165,6 +168,24 @@ public class LockScreenActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }
+    }
+
+    private void updateUIDirectionView(float angle) {
+        Animation animation = new RotateAnimation(
+                -currentAngle,
+                -angle,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f
+        );
+        currentAngle = angle;
+
+        animation.setDuration(500);
+        animation.setRepeatCount(0);
+        animation.setFillAfter(true);
+
+        directionView.startAnimation(animation);
     }
 
     private void showToastMessage(String message) {

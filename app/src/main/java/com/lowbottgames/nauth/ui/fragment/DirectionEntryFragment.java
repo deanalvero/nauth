@@ -8,11 +8,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.TextView;
 
 import com.lowbottgames.nauth.R;
 import com.lowbottgames.nauth.device.Compass;
 import com.lowbottgames.nauth.domain.DirectionEntry;
+import com.lowbottgames.nauth.ui.view.DirectionView;
 
 public class DirectionEntryFragment extends Fragment {
 
@@ -22,6 +25,9 @@ public class DirectionEntryFragment extends Fragment {
     private TextView textViewValue;
     private DirectionEntry directionEntry;
     private DirectionEntryFragment.Listener listener;
+
+    private DirectionView directionView;
+    private float currentAngle;
 
     private static final String KEY_TYPE = "KEY_TYPE";
 
@@ -76,12 +82,14 @@ public class DirectionEntryFragment extends Fragment {
             public void onAngleChange(float angle) {
                 textViewAngle.setText(String.valueOf(angle));
                 textViewValue.setText(String.valueOf((int) angle / 10));
+                updateUIDirectionView(angle);
             }
         });
 
         textViewInput = (TextView) view.findViewById(R.id.textView_input);
         textViewAngle = (TextView) view.findViewById(R.id.textView_angle);
         textViewValue = (TextView) view.findViewById(R.id.textView_value);
+        directionView = (DirectionView) view.findViewById(R.id.directionView);
 
         view.findViewById(R.id.button_select).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +107,24 @@ public class DirectionEntryFragment extends Fragment {
                 directionEntry.delete();
             }
         });
+    }
+
+    private void updateUIDirectionView(float angle) {
+        Animation animation = new RotateAnimation(
+                -currentAngle,
+                -angle,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f
+        );
+        currentAngle = angle;
+
+        animation.setDuration(500);
+        animation.setRepeatCount(0);
+        animation.setFillAfter(true);
+
+        directionView.startAnimation(animation);
     }
 
     @Override
