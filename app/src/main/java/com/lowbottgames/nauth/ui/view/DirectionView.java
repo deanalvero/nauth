@@ -68,7 +68,9 @@ public class DirectionView extends View {
 
             String tmp = String.valueOf(i);
             paint.getTextBounds(tmp, 0, tmp.length(), rect);
-            double angle = ((i * 2 * Math.PI) / numbers) - (Math.PI / 2);
+
+            double division = (2 * Math.PI) / numbers;
+            double angle = (i * division - (Math.PI / 2)) + (division/2);
             int x = (int) (width / 2 + Math.cos(angle) * radius - rect.width() / 2);
             int y = (int) (height / 2 + Math.sin(angle) * radius + rect.height() / 2);
 //            canvas.rotate(i * (360/ numbers), x, y);
@@ -81,7 +83,7 @@ public class DirectionView extends View {
         paint.setStrokeWidth(3);
         for (int i = 0; i < numbers; i++) {
 //            double angle = ((i * 2 * Math.PI) / numbers) - (Math.PI) - (Math.PI / 2);
-            double angle = ((i * 2 * Math.PI) / numbers) - (Math.PI / 4);
+            double angle = ((i * 2 * Math.PI) / numbers) - (Math.PI / 2);
             int handRadius = (int) (radius * 1.1f);
             canvas.drawLine(width / 2, height / 2,
                     (float) (width / 2 + Math.cos(angle) * handRadius),
