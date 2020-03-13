@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.lowbottgames.nauth.device.DirectionRepositoryImpl;
 import com.lowbottgames.nauth.device.SettingsRepositoryImpl;
+import com.lowbottgames.nauth.domain.DirectionManager;
 import com.lowbottgames.nauth.domain.SettingsRepository;
 import com.lowbottgames.nauth.ui.activity.LockScreenActivity;
 
@@ -15,8 +17,13 @@ public class LockScreenReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         SettingsRepository settingsRepository = new SettingsRepositoryImpl(context);
+        DirectionManager directionManager = new DirectionManager(
+                new DirectionRepositoryImpl(context)
+        );
 
-        if (settingsRepository.getFlag(KEY_ENABLE_LOCK)) {
+        if (settingsRepository.getFlag(KEY_ENABLE_LOCK)
+                && directionManager.isEnrolled()
+        ) {
             Intent newIntent = new Intent(context, LockScreenActivity.class);
             newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(newIntent);

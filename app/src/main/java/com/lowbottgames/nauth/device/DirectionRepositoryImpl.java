@@ -37,8 +37,12 @@ public class DirectionRepositoryImpl implements DirectionRepository {
         }
 
         int[] result = new int[stringSplits.length];
-        for (int i = 0; i < stringSplits.length; i++) {
-            result[i] = Integer.parseInt(stringSplits[i]);
+        try {
+            for (int i = 0; i < stringSplits.length; i++) {
+                result[i] = Integer.parseInt(stringSplits[i]);
+            }
+        } catch (NumberFormatException e) {
+            return new int[] {-1, -1, -1, -1};
         }
 
         return result;

@@ -24,4 +24,9 @@ public class DirectionManager {
         directionRepository.set(directions);
     }
 
+    public boolean isEnrolled() {
+        int[] directionsStored = directionRepository.get();
+        return !Arrays.equals(new int[] {-1, -1, -1, -1}, directionsStored);
+    }
+
 }
